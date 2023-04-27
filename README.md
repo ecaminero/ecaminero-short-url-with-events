@@ -2,27 +2,18 @@
 A Meli short url application
 
 ### Requirements 
-* [Python 3.10](https://www.python.org/downloads/)
-* [Poetry](https://python-poetry.org/docs/#installation)
 * [Docker](https://docs.docker.com/get-docker/)
 * [Docker Compose](https://docs.docker.com/compose/compose-file/)
 
-## Install packages
+## Clone Repository
 ```shell script
-poetry install
+git@github.com:ecaminero/short-url-with-events.git
 ```
 
-## Run Tests 
+## Run app
 ```shell script
-poetry run pytest
+docker compose up --build
 ```
 
-## Run Local
-```shell script
-
-## uvicorn server
-poetry run uvicorn src.main:app --reload --port 8000
-
-## hypercorn server
-poetry run hypercorn src.main:ap --bind 0.0.0.0:8000
-```
+## Use app
+  * Go to http://localhost:8000/docs
