@@ -5,6 +5,7 @@ from src.services.UrlService import UrlService
 from src.tasks import redis
 from fastapi_filter import FilterDepends
 from src.decorators.messages import publish_message
+from src.configs.Nats import EVENT_URL_CREATE
 from fastapi import (
     APIRouter,
     Depends,
@@ -18,7 +19,6 @@ AdminRouter = APIRouter(
     tags=["administration"]
 )
 
-
 @AdminRouter.get("")
 async def filter(
         url_filter: UrlFilter = FilterDepends(UrlFilter),
@@ -27,7 +27,7 @@ async def filter(
 
 
 @AdminRouter.post("", status_code=status.HTTP_201_CREATED)
-@publish_message("url.create")
+@publish_message(EVENT_URL_CREATE)
 async def create(data: Url, background_tasks: BackgroundTasks, urlService: UrlService = Depends()) -> dict:
     is_duplicate = urlService.is_duplicated(data)
     if is_duplicate:
@@ -41,7 +41,6 @@ async def create(data: Url, background_tasks: BackgroundTasks, urlService: UrlSe
 
 
 @AdminRouter.get("/{id}")
-@publish_message("url.metrics")
 async def get(id: UUID, urlService: UrlService = Depends()) -> dict:
     result = urlService.getById(id)
     if not result:

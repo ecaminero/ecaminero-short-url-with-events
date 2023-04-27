@@ -15,12 +15,14 @@ MainRouter = APIRouter(prefix="")
 async def pong() -> str:
     return "pong"
 
-@MainRouter.get("/{short_url}", response_class=RedirectResponse)
+@MainRouter.get("/{short_url}", 
+                response_class=RedirectResponse, 
+                status_code=status.HTTP_307_TEMPORARY_REDIRECT)
 @cache
-async def get_ĺong_url(short_url: str,  background_tasks: BackgroundTasks, urlService: UrlService = Depends()):
-    url = urlService.get(UrlFilter(key=short_url))
+async def get_ĺong_url(short_url: str, background_tasks: BackgroundTasks, urlService: UrlService = Depends()):
+    url = urlService.filter(UrlFilter(key=short_url))
     if not url:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-
+    url = url[0] # first element
     background_tasks.add_task(redis.set_key, url)
-    return RedirectResponse(url.original)
+    return  url.original

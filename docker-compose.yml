@@ -2,6 +2,7 @@ version: '3.8'
 services:
   short-url-app:
     container_name: short-url-app
+    restart: unless-stopped
     build:
       context: ./short-url-app
       dockerfile: Containerfile
@@ -14,12 +15,12 @@ services:
         REDIS_HOST: meli-redis
         REDIS_PASSWORD: meli
         NATS_SERVER: nats://meli-nats:4222
-        BASE_URL: https://74bb-200-113-133-203.ngrok-free.app
+        # BASE_URL: https://74bb-200-113-133-203.ngrok-free.app # Only for ngrok
         URL_SIZE: 6
     depends_on:
-      - postgres
       - nats
       - redis
+      - postgres
     networks: 
       - meli
     ports:

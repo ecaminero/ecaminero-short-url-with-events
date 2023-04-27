@@ -3,6 +3,9 @@ import logging
 from src.configs.Environment import get_environment_variables
 
 env = get_environment_variables()
+EVENT_URL_CREATE = "url.create"
+EVENT_URL_METRICS = "url.metrics.visit.create"
+
 
 async def get_nats_connector():
     async def disconnected_cb():

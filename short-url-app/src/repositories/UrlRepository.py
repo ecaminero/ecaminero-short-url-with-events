@@ -32,7 +32,7 @@ class UrlRepository:
     def getById(self, data: Url) -> Url:
         return self.db.get(Url, data.id)
     
-    def getByQuery(self, data: Url, attr: Url) -> List[Url]:
+    def getByQuery(self, data: Url, attr: Optional[Url] = Url) -> List[Url]:
         try:
             return self.db.query(attr).filter(data)
         except Exception as e:
