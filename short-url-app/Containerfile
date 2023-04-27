@@ -1,0 +1,22 @@
+# Use the official Python image as a parent image
+FROM python:3.9
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Configure Poetry
+ENV PIP_DISABLE_PIP_VERSION_CHECK=on
+ENV POETRY_VIRTUALENVS_IN_PROJECT=true
+ENV POETRY_NO_INTERACTION=1
+RUN curl -sSL https://install.python-poetry.org | python3 -
+
+# Copy the poetry.lock and pyproject.toml files into the container
+COPY . /app
+
+# # Install dependencies
+RUN ~/.local/bin/poetry install 
+ENV APP_PORT=8000
+
+EXPOSE $APP_PORT
+# # Run the application
+ENTRYPOINT ~/.local/bin/poetry run hypercorn src.main:app --bind 0.0.0.0:8000
