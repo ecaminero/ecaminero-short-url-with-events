@@ -24,14 +24,13 @@ export class MetricsController {
     try {
      result = await this.metricsService.save(data);
     } catch (error) {
-      console.log("////////////////////////////////")
+      this.logger.error("error")
     }
-    console.log(Reflect.has(result, "id"))
     
     if (Reflect.has(result, "id")) {
       return result;
     } else {
-      this.logger.error(result);
+      this.logger.debug(result);
       this.logger.verbose("Posting on nats");
       this.client.send(env.NATS_METRICS_VISIT_CREATE, data).subscribe();
     }

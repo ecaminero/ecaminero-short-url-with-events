@@ -63,11 +63,10 @@ async def update(id: UUID, data: Url, background_tasks: BackgroundTasks, urlServ
     url = urlService.getById(id)
     if not url:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-
-    print("url.id----->", url.id)
-    print("url.data----->", data)
-
-    result = await urlService.update(url, data)
+    try:
+        result = await urlService.update(url, data)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    
     background_tasks.add_task(redis.set_key, result)
-
     return result.normalize()
