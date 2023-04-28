@@ -24,5 +24,5 @@ poetry run pytest
 poetry run uvicorn src.main:app --reload --port 8000
 
 ## hypercorn server
-poetry run hypercorn src.main:ap --bind 0.0.0.0:8000
+poetry run hypercorn src.main:app --bind 0.0.0.0:8000
 ```

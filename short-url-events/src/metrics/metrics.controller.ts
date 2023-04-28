@@ -5,7 +5,7 @@ import { MetricsService } from './metrics.service';
 import { sleep } from '../utils';
 import { Metrics } from './metrics.entity';
 import * as env from '../constants';
-import { queue } from 'rxjs';
+import { group } from 'console';
 
 @Controller()
 export class MetricsController {
@@ -16,7 +16,7 @@ export class MetricsController {
     @InjectRepository(Metrics)
     private readonly metricsService: MetricsService) { }
 
-  @EventPattern(env.NATS_METRICS_VISIT_CREATE)
+  @MessagePattern(env.NATS_METRICS_VISIT_CREATE)
   async createMetrics(@Payload() data: any, @Ctx() context: NatsContext) {
     let result = {}
     this.logger.log(`Subject:: ${context.getSubject()}`);
