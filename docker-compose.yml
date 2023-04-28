@@ -1,49 +1,49 @@
 version: '3.8'
 services:
-  short-url-app:
-    container_name: short-url-app
-    restart: unless-stopped
-    build:
-      context: ./short-url-app
-      dockerfile: Containerfile
-    environment:
-        APP_NAME: Meli Short Url
-        API_VERSION: 1.0.0
-        API_PORT: 8000
-        DEBUG_MODE: true
-        DATABASE_HOST: meli-postgres
-        REDIS_HOST: meli-redis
-        REDIS_PASSWORD: meli
-        NATS_SERVER: nats://meli-nats:4222
-        # BASE_URL: https://74bb-200-113-133-203.ngrok-free.app # Only for ngrok
-        URL_SIZE: 6
-    depends_on:
-      - nats
-      - redis
-      - postgres
-    networks: 
-      - meli
-    ports:
-      - "8000:8000"
-  short-url-events:
-    container_name: short-url-events
-    build:
-      context: ./short-url-events
-      dockerfile: Containerfile
-    environment:
-        APP_PORT: 8080
-        REDIS_HOST: meli-redis
-        REDIS_PASSWORD: meli
-        REDIS_RETRY_DELAY_MS: 3000
-        REDIS_RETRY_ATTEMPS: 20
-        NATS_SERVER: nats://nats:4222
-        URL_SHORT_URL_APP: http://short-url-app:8000
-    depends_on:
-      - nats
-      - nats-1
-      - redis
-    networks: 
-      - meli
+  # short-url-app:
+  #   container_name: short-url-app
+  #   restart: unless-stopped
+  #   build:
+  #     context: ./short-url-app
+  #     dockerfile: Containerfile
+  #   environment:
+  #       APP_NAME: Meli Short Url
+  #       API_VERSION: 1.0.0
+  #       API_PORT: 8000
+  #       DEBUG_MODE: true
+  #       DATABASE_HOST: meli-postgres
+  #       REDIS_HOST: meli-redis
+  #       REDIS_PASSWORD: meli
+  #       NATS_SERVER: nats://meli-nats:4222
+  #       # BASE_URL: https://74bb-200-113-133-203.ngrok-free.app # Only for n
+  #       URL_SIZE: 6
+  #   depends_on:
+  #     - nats
+  #     - redis
+  #     - postgres
+  #   networks: 
+  #     - meli
+  #   ports:
+  #     - "8000:8000"
+  # short-url-events:
+  #   container_name: short-url-events
+  #   build:
+  #     context: ./short-url-events
+  #     dockerfile: Containerfile
+  #   environment:
+  #       APP_PORT: 8080
+  #       REDIS_HOST: meli-redis
+  #       REDIS_PASSWORD: meli
+  #       REDIS_RETRY_DELAY_MS: 3000
+  #       REDIS_RETRY_ATTEMPS: 20
+  #       NATS_SERVER: nats://nats:4222
+  #       URL_SHORT_URL_APP: http://short-url-app:8000
+  #   depends_on:
+  #     - nats
+  #     - nats-1
+  #     - redis
+  #   networks: 
+  #     - meli
   redis:
     image: redis:7.0.11-alpine
     container_name: meli-redis
@@ -109,6 +109,19 @@ services:
       - meli
     depends_on: 
       - nats
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: edwin@hola.ai
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data-volume:/var/lib/pgadmin
+    networks:
+      - meli
 volumes:
   redis-data-volumen:
     driver: local

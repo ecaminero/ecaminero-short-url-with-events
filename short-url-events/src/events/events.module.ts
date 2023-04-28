@@ -6,23 +6,18 @@ import { NATS_SERVERS } from '../constants';
 import { EventService } from './events.service';
 import { HttpModule } from '@nestjs/axios';
 
+const Modules = ClientsModule.register([
+  {name: 'NATS', transport: Transport.NATS,
+  options: { servers: NATS_SERVERS, queue: 'url_queue'}}
+]);
+
 @Module({
   imports: [
     HttpModule,
-    ClientsModule.register([
-      {
-      name: 'NATS', transport: Transport.NATS,
-      options: { 
-        servers: NATS_SERVERS,
-        queue: 'url_queue',
-      }
-    },
-    ]),
+    Modules
   ],
   controllers: [EventsController],
-  providers: [
-    EventService
-  ]
+  providers: [EventService]
 })
 
 export class EventsModule {}

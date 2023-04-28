@@ -1,8 +1,8 @@
 import { Controller, Inject, Logger } from '@nestjs/common';
 import { ClientProxy, Ctx, MessagePattern, NatsContext, Payload } from '@nestjs/microservices';
 import { EventService } from './events.service';
-import * as cons from '../constants';
 import { sleep } from '../utils';
+import * as cons from '../constants';
 
 @Controller()
 export class EventsController {
@@ -28,15 +28,12 @@ export class EventsController {
         const result = await this.eventService.delete(url["id"])
         this.logger.log(`delete:: ${result["id"]}`);
       }
-
     } catch (error) {
       this.logger.error(error);
       this.logger.verbose("publishing to NATS");
       sleep(3000);
       this.client.send(cons.NATS_EXPIRED_URL, data).subscribe();
-
     }
   }
-  
   
 }
