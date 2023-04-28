@@ -7,13 +7,14 @@ import { MetricsController } from './metrics.controller';
 import { Metrics } from './metrics.entity';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import * as env from '../constants';
+import { group } from 'console';
 
 
 @Module({
   imports: [
     ClientsModule.register([
-      {name: 'NATS', transport: Transport.NATS,
-      options: { servers: env.NATS_SERVERS, queue: 'url_queue'}}
+      {name: 'NATS_METRICS', transport: Transport.NATS,
+      options: { servers: env.NATS_SERVERS, queue: 'metrics', group: 'metrics'}}
     ]),
     TypeOrmModule.forFeature([Metrics]),
   ],
