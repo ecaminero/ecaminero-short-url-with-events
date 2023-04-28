@@ -5,7 +5,7 @@ from src.services.UrlService import UrlService
 from src.tasks import redis
 from fastapi_filter import FilterDepends
 from src.decorators.messages import publish_message
-from src.configs.Nats import EVENT_URL_CREATE
+from src.configs.Nats import EVENT_URL_CREATE, EVENT_URL_UPDATE
 from fastapi import (
     APIRouter,
     Depends,
@@ -58,9 +58,9 @@ async def delete(id: UUID, urlService: UrlService = Depends()) -> dict:
 
 
 @AdminRouter.put("/{id}", status_code=status.HTTP_200_OK)
-@publish_message("url.update")
+@publish_message(EVENT_URL_UPDATE)
 async def update(id: UUID, data: Url, background_tasks: BackgroundTasks, urlService: UrlService = Depends()) -> dict:
-    url = urlService.get(id)
+    url = urlService.getById(id)
     if not url:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 

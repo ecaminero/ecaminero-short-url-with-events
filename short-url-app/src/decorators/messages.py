@@ -28,3 +28,4 @@ def publish_message(channel: Optional[str] = ""):
             return result
         return wrapper
     return inner_decorator
+
