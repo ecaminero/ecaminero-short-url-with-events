@@ -6,7 +6,6 @@ from src.configs import get_db_connection
 from src.models.UrlModel import Url
 from src.schemas import UrlFilter
 import logging
-from functools import lru_cache
 
 
 class UrlRepository:
@@ -59,11 +58,9 @@ class UrlRepository:
 
             raise (e)
 
-    def filter(self, filter: Optional[UrlFilter]) -> List[Url]:
+    def filter(self, filter: Optional[UrlFilter], first:bool = False) -> List[Url]:
         query = self.db.query(Url)
         query = filter.filter(query)
         query = filter.sort(query)
-        try:
-            return self.db.execute(query).scalars().all()
-        except Exception as e:
-            return []
+        scalars = self.db.execute(query).scalars()
+        return scalars.first() if first else scalars.all()

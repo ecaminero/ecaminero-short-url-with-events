@@ -31,8 +31,8 @@ class UrlService:
     def delete(self, url: Url) -> None:
         return self.urlRepository.delete(url)
 
-    def filter(self, filter: Optional[UrlFilter]) -> List[Url]:
-        return self.urlRepository.filter(filter)
+    def filter(self, filter: Optional[UrlFilter], first:bool = False) -> List[Url]:
+        return self.urlRepository.filter(filter, first)
 
     def getById(self, id: UUID) -> Url:
         return self.urlRepository.getById(Url(id=id))
