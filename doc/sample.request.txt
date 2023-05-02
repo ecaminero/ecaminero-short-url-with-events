@@ -6,11 +6,14 @@
 
 { "url": "https://medium.com/blog/what-were-reading-want-to-see-something-beautiful-40b7f7a2c5c3", "expire_at": "2023-04-26"}
 
-{ "expire_at": "2023-04-26", "url": "https://articulo.mercadolibre.cl/MLC-550156003-cargador-para-macbook-60-w-providencia-nuevo-modelo-a1278-_JM#reco_item_pos=2&reco_backend=machinalis-homes&reco_backend_type=function&reco_client=home_navigation-recommendations&reco_id=f87b3357-a46f-4ccb-ba1c-bb61e89d5b9a&c_id=/home/navigation-recommendations/element&c_element_order=3&c_uid=a60c79b6-2272-4151-a432-2e5917bcbff4"}
+{ "expire_at": "2023-04-26", "url": "https://articulo.mercadolibre.cl/MLC-550156003-cargador-para-macbook-60-w-providencia-nuevo-modelo-a1278-_JM#reco_item_pos=2&reco_backend=machinalis-homes&reco_backend_type=function&reco_client=home_navigation-recommendations&reco_id=f87b3357-a46f-4ccb-ba1c-bb61e89d5b9a&c_id=/home/navigation-recommendations/element&c_element_order=3&c_uid=a60c79b6-2272-4151-a432-2e5917bcbff4", 'short':'http://localhost:8000/qzYlJh'}
 
 { "url": "https://aioredis.readthedocs.io/en/latest/getting-started/", "expire_at": "2023-04-26"}
 
 { "url": "https://github.com/0xTheProDev/fastapi-clean-example/blob/4a1feab40617451b11189b754e0ea21e409b1d3c/services/AuthorService.py", "expire_at": "2023-12-26"}
+
+{ "id": "1040e206-c04f-4283-99b2-4054fba12fd4", "expire_at": "2023-04-26",  "short": "http://localhost:8000/qzYlJh", "url": "https://articulo.mercadolibre.cl/MLC-550156003-cargador-para-macbook-60-w-providencia-nuevo-modelo-a1278-_JM#reco_item_pos=2&reco_backend=machinalis-homes&reco_backend_type=function&reco_client=home_navigation-recommendations&reco_id=f87b3357-a46f-4ccb-ba1c-bb61e89d5b9a&c_id=/home/navigation-recommendations/element&c_element_order=3&c_uid=a60c79b6-2272-4151-a432-2e5917bcbff4"}
+
 
 
 ## REDIS Commands
@@ -19,3 +22,6 @@ auth meli
 
 set qzYlJh {'id': '1040e206-c04f-4283-99b2-4054fba12fd4','original': 'https://www.postman.com/downloads/','short':'http://localhost:8000/qzYlJh', 'expire_at': '2023-04-26'} ex 2
 set qzYlJh '{"id":"1040e206-c04f-4283-99b2-4054fba12fd4","original": "https://www.postman.com/downloads/","short":"http://localhost:8000/qzYlJh", "expire_at": "2023-04-26"}' ex 2
+
+
+usefull codes
