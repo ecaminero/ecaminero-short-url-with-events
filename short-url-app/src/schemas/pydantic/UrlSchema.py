@@ -19,7 +19,7 @@ class Url(BaseModel):
         return expire_at
     
     @validator("url")
-    def url_is_valid(cls, url: str) -> datetime:
+    def url_is_valid(cls, url: str) -> str:
         if not validate_url(url):
             raise ValueError("Url is not valid, must be https://example.com")
         
@@ -28,3 +28,15 @@ class Url(BaseModel):
         
         return url
 
+class UpdateUrl(Url):
+    url: Optional[str]
+
+    @validator("url")
+    def url_is_valid(cls, url: str) -> str:
+        if url:
+            if not validate_url(url):
+                raise ValueError("Url is not valid, must be https://example.com")
+            
+            if not available_url(url, 4):
+                raise ValueError("The url must be available")
+        return url
