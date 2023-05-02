@@ -1,18 +1,15 @@
 import { Module } from '@nestjs/common';
 import { EventsModule } from './events/events.module';
-import { RedisModule } from './redis/redis.module';
 import { MetricsModule } from './metrics/metrics.module';
 
 import { HttpModule } from '@nestjs/axios';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import * as env from './constants';
 
-
 @Module({
   imports: [
-    EventEmitterModule.forRoot(),
+
     TypeOrmModule.forRoot({
       type: "postgres",
       host: env.DB_HOST,
@@ -30,8 +27,7 @@ import * as env from './constants';
       }),
     }),
     EventsModule,
-    RedisModule,
     MetricsModule
   ],
 })
-export class AppModule {}
+export class AppModule { }

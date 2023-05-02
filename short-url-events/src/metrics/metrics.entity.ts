@@ -23,4 +23,7 @@ export class Metrics {
 
     @Column({ type: "varchar", nullable: true })
     original: string;
+
+    @Column({ type: "varchar" })
+    eventId: string;
 }

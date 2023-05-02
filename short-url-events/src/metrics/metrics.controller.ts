@@ -1,40 +1,40 @@
-import { Controller, Inject, Logger } from '@nestjs/common';
+import { Controller, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ClientProxy, Ctx, MessagePattern,EventPattern, NatsContext, Payload } from '@nestjs/microservices';
+import { Ctx, EventPattern, Payload } from '@nestjs/microservices';
 import { MetricsService } from './metrics.service';
 import { sleep } from '../utils';
 import { Metrics } from './metrics.entity';
+import { NatsJetStreamContext } from '@nestjs-plugins/nestjs-nats-jetstream-transport';
+import { NatsService } from './nats.service';
 import * as env from '../constants';
-import { group } from 'console';
+
 
 @Controller()
 export class MetricsController {
   private readonly logger = new Logger(MetricsController.name);
 
   constructor(
-    @Inject('NATS_METRICS') private client: ClientProxy,
     @InjectRepository(Metrics)
-    private readonly metricsService: MetricsService) { }
+    private readonly metricsService: MetricsService,
+    private readonly natsService: NatsService,
+    ) { }
 
-  @MessagePattern(env.NATS_METRICS_VISIT_CREATE)
-  async createMetrics(@Payload() data: any, @Ctx() context: NatsContext) {
-    let result = {}
-    this.logger.log(`Subject:: ${context.getSubject()}`);
+  @EventPattern(env.NATS_METRICS_VISIT_CREATE)
+  async createMetrics(@Payload() data: any, @Ctx() context: NatsJetStreamContext) {
+    context.message.ack();
+    this.logger.log(`Subject:: ${context.message.subject} ::received`);
     this.logger.verbose(`Data:: ${JSON.stringify(data)}`);
+
     try {
-     result = await this.metricsService.save(data);
+      const result = await this.metricsService.save(data);
     } catch (error) {
-      this.logger.error("error")
-    }
-    
-    if (Reflect.has(result, "id")) {
-      return result;
-    } else {
-      this.logger.debug(result);
-      this.logger.verbose("Posting on nats");
-      this.client.send(env.NATS_METRICS_VISIT_CREATE, data).subscribe();
+      this.logger.error(error);
+      await sleep(3000);
+      this.logger.verbose("publishing to NATS");
+      this.natsService.createMetrics(data);
     }
   }
+
 }
 
 

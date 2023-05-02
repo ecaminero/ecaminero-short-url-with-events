@@ -3,23 +3,28 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MetricsService } from './metrics.service';
 import { MetricsController } from './metrics.controller';
+import { NatsService } from './nats.service';
 
 import { Metrics } from './metrics.entity';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import * as env from '../constants';
-import { group } from 'console';
+import { NatsJetStreamTransport } from '@nestjs-plugins/nestjs-nats-jetstream-transport';
 
+import * as env from '../constants';
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {name: 'NATS_METRICS', transport: Transport.NATS,
-      options: { servers: env.NATS_SERVERS, queue: 'metrics', group: 'metrics'}}
-    ]),
     TypeOrmModule.forFeature([Metrics]),
+    NatsJetStreamTransport.register({
+      connectionOptions: {
+        servers: env.NATS_SERVERS,
+        name: 'metrics',
+      },
+    }),
   ],
-  providers: [MetricsService],
+  providers: [MetricsService, NatsService],
   controllers: [MetricsController],
 })
 
 export class MetricsModule { }
+
+
+

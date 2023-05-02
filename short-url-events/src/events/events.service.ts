@@ -1,29 +1,29 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
-import { AxiosError } from 'axios';
-import { catchError, lastValueFrom, map } from 'rxjs';
+import { catchError, lastValueFrom, map, firstValueFrom } from 'rxjs';
 import { URL_SHORT_URL_APP } from 'src/constants';
+import { AxiosError } from 'axios';
+
 
 @Injectable()
 export class EventService {
   private serviceUrl = `${URL_SHORT_URL_APP}/admin`;
   private readonly logger = new Logger(EventService.name);
 
-  constructor(
-    private readonly httpService: HttpService) { }
+  constructor(private readonly httpService: HttpService) { }
 
-  getFromQuery({ query }: { query: string; }): Promise<object[]> {
+    async getFromQuery({ query }: { query: string; }):  Promise<object[]>{
     const url = `${this.serviceUrl}/url?${query}`;
-    const data = lastValueFrom(
+    const { data } = await firstValueFrom(
       this.httpService.get<object[]>(url).pipe(
-        map((res) => {return res.data}),
         catchError((error: AxiosError) => {
-          this.logger.error(error);
+          this.logger.error(error.response.data);
           throw error;
         }),
       ),
     );
-    return data
+
+    return data;
   }
 
   delete(id: string): Promise<object[]> {

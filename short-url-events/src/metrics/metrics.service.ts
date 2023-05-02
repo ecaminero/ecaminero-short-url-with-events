@@ -3,7 +3,7 @@ import { Injectable, Logger, Inject } from '@nestjs/common';
 import { Metrics } from './metrics.entity'
 import { Repository } from 'typeorm';
 import { ErrorType } from '../types';
-import { sleep } from '../utils';
+
 
 @Injectable()
 export class MetricsService {
@@ -11,7 +11,7 @@ export class MetricsService {
 
   constructor(
     @InjectRepository(Metrics)
-    private readonly metricsRepository: Repository<Metrics>
+    private readonly metricsRepository: Repository<Metrics>,
   ) { }
 
   async save(data: object): Promise<ErrorType | Metrics> {
@@ -21,7 +21,7 @@ export class MetricsService {
       return await this.metricsRepository.save(metrics);
     } catch (error) {
       this.logger.error(`Error: ${error.message}`);
-      return { name: error.message, code: error.code };
+      throw error;
     }
   }
 
