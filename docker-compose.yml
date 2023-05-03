@@ -40,8 +40,7 @@ services:
         NATS_SERVER: nats://nats:4222
         URL_SHORT_URL_APP: http://short-url-app:8000
     depends_on:
-      - nats
-      - nats-1
+      - nats1
       - redis
     networks: 
       - meli
@@ -81,35 +80,24 @@ services:
     networks:
       - meli
   # Nats Server
-  nats:
-    image: nats
+  nats1:
     container_name: meli-nats
+    image: nats:latest
+    command: "--jetstream --store_dir /data --http_port 8222"
+    volumes:
+      - nats1-data-volume:/data
     ports:
-      - "8222:8222"
       - "4222:4222"
-    command: "--cluster_name NATS --cluster nats://0.0.0.0:6222 --http_port 8222"
+      - "8222:8222"
+      - "6222:6222"
     networks:
       - meli
     healthcheck:
-        test: echo $$(wget --server-response http://nats:8222/varz 2>&1 | grep  '200 OK') | grep '200'  || exit 1
+        test: echo $$(wget --server-response http://nats1:8222/varz 2>&1 | grep  '200 OK') | grep '200'  || exit 1
         interval: 20s
         timeout: 5s
         retries: 5
         start_period: 40s
-  nats-1:
-    image: nats
-    container_name: meli-nats-1
-    command: "--cluster_name NATS --cluster nats://0.0.0.0:6222 --routes=nats://ruser:T0pS3cr3t@nats:6222"
-    healthcheck:
-        test: echo $$(wget --server-response http://meli-nats-1:8222/varz 2>&1 | grep  '200 OK') | grep '200'  || exit 1
-        interval: 20s
-        timeout: 5s
-        retries: 5
-        start_period: 40s
-    networks: 
-      - meli
-    depends_on: 
-      - nats
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin4_container
@@ -129,6 +117,8 @@ volumes:
   postgres-data-volume:
     driver: local
   pgadmin-data-volume:
+    driver: local
+  nats1-data-volume:
     driver: local
 networks:
   meli:

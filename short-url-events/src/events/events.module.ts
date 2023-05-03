@@ -1,23 +1,30 @@
 
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { EventsController } from './events.controller';
-import { NATS_SERVERS } from '../constants';
 import { EventService } from './events.service';
-import { HttpModule } from '@nestjs/axios';
+import { NatsService } from './nats.service';
 
-const Modules = ClientsModule.register([
-  {name: 'NATS', transport: Transport.NATS,
-  options: { servers: NATS_SERVERS, queue: 'url_queue'}}
-]);
+import { HttpModule } from '@nestjs/axios';
+import { NatsJetStreamTransport } from '@nestjs-plugins/nestjs-nats-jetstream-transport';
+import * as env from '../constants';
+
 
 @Module({
   imports: [
-    HttpModule,
-    Modules
+    HttpModule.register({
+      timeout: 2000,
+      maxRedirects: 1,
+    }),
+    NatsJetStreamTransport.register({
+      connectionOptions: {
+        servers: env.NATS_SERVERS,
+        name: 'events',
+      },
+    }),
   ],
+  exports: [NatsService],
   controllers: [EventsController],
-  providers: [EventService]
+  providers: [EventService, NatsService]
 })
 
 export class EventsModule {}

@@ -1,33 +1,28 @@
 import logging
 from src.configs.Nats import get_nats_connector
-from src.configs.Nats import EVENT_METRICS_VISIT_CREATE
+from src.configs.Nats import EVENT_URL_METRICS
 from src.utils import encode_json
 from datetime import datetime
-import asyncio
+import uuid
 
 async def send_metrics(metrics: dict, request: any):
     try:
         nats_connection = await get_nats_connector()
         data = {
+            "eventId": str(uuid.uuid4()),
             "browser": request.headers.get("user-agent"),
             "acceptLanguage": request.headers.get("accept-language"),
             "time": datetime.now().isoformat(),
             **request.client._asdict(),
             **metrics,
         }
-        future = asyncio.Future()
-        async def cb(msg):
-            nonlocal future
-            future.set_result(msg)
-        
-        await nats_connection.subscribe(EVENT_METRICS_VISIT_CREATE, queue="metrics", cb=cb)
-        await nats_connection.publish(EVENT_METRICS_VISIT_CREATE, encode_json(data))
+        js = nats_connection.jetstream()
         logging.info("pushed message from client ->", data["host"], "url -->", data["short"])
-        # Terminate connection to NATS.
-        msg = await asyncio.wait_for(future, 1)
-
-        await nats_connection.drain()
+        await js.publish("metrics.url.visit", encode_json(data))
+        await nats_connection.close()        
+        # Disconnect from the server
     except Exception as e:
+        print(e)
         logging.error("task.send_metrics")
 
     

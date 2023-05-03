@@ -8,6 +8,7 @@ from src.repositories.UrlRepository import UrlRepository
 from src.schemas.pydantic import UrlSchema
 from src.configs.Environment import get_environment_variables
 from src.schemas.filters.UrlFilter import UrlFilter
+from src.utils import remove_empty_keys
 
 env = get_environment_variables()
 
@@ -22,7 +23,7 @@ class UrlService:
         key = generate(size=env.URL_SIZE)
         return self.urlRepository.create(
             Url(
-                original=data.url,
+                original=data.original,
                 short=f"{env.BASE_URL}/{key}",
                 key=key,
                 expire_at=data.expire_at)
@@ -31,20 +32,20 @@ class UrlService:
     def delete(self, url: Url) -> None:
         return self.urlRepository.delete(url)
 
-    def filter(self, filter: Optional[UrlFilter]) -> List[Url]:
-        return self.urlRepository.filter(filter)
+    def filter(self, filter: Optional[UrlFilter], first:bool = False) -> List[Url]:
+        return self.urlRepository.filter(filter, first)
 
-    def getById(self, id: UUID) -> Url:
-        return self.urlRepository.getById(Url(id=id))
+    def get_by_id(self, id: UUID) -> Url:
+        return self.urlRepository.get_by_id(Url(id=id))
 
     def get(self, data: Url) -> Url:
-        return self.urlRepository.getByQuery(data)
+        return self.urlRepository.get_by_query(data)
 
-    def update(self, url: Url, data: UrlSchema) -> dict:
-        url.expire_at = data.expire_at
-        url.original = data.url
-        return self.urlRepository.update(url)
+    def update(self, data: dict) -> dict:
+        update = remove_empty_keys(data)
+        update = Url(**update)
+        return self.urlRepository.update(update)
 
     def is_duplicated(self, url: UrlSchema) -> bool:
-        data = self.urlRepository.getByQuery(Url.original == url.url, Url.id)
+        data = self.urlRepository.get_by_query(Url.original == url.original, Url.id)
         return bool(data.first())

@@ -1,39 +1,50 @@
-import { Controller, Inject, Logger } from '@nestjs/common';
-import { ClientProxy, Ctx, MessagePattern, NatsContext, Payload } from '@nestjs/microservices';
+import { Controller, Logger } from '@nestjs/common';
+import { Ctx, MessagePattern, Payload, RedisContext } from '@nestjs/microservices';
+import { NatsJetStreamContext } from '@nestjs-plugins/nestjs-nats-jetstream-transport';
 import { EventService } from './events.service';
+import { NatsService } from './nats.service';
 import { sleep } from '../utils';
-import * as cons from '../constants';
+import * as env from '../constants';
+import { v4 as uuidv4 } from 'uuid';
+
 
 @Controller()
 export class EventsController {
   private readonly logger = new Logger(EventService.name);
 
   constructor(
-    @Inject('NATS') private client: ClientProxy,
+    private readonly natsService: NatsService,
     private readonly eventService: EventService) {}
 
-  @MessagePattern(cons.NATS_CREATE_URL)
-  async getNotifications(@Payload() data: any, @Ctx() context: NatsContext){
-    this.logger.log(`Subject:: ${context.getSubject()}`);
+  @MessagePattern(env.NATS_EVENT_URL_CREATE)
+  async getNotifications(@Payload() data: object, @Ctx() context: NatsJetStreamContext){
+    this.logger.log(`Subject:: ${context.message.subject} ::received`);
     this.logger.verbose(JSON.stringify(data));
   }
 
-  @MessagePattern(cons.NATS_EXPIRED_URL)
-  async expired(@Payload() data: any, @Ctx() context: NatsContext){
-    this.logger.log(`Subject:: ${context.getSubject()}:: ${data}`);
+  @MessagePattern(env.NATS_EVENT_URL_DELETE)
+  async deleteUrl(@Payload() data: object, @Ctx() context: NatsJetStreamContext){
+    this.logger.log(`Subject:: ${context.message.subject} ::received`);
     this.logger.verbose(JSON.stringify(data));
     try {
-      const results = await this.eventService.getFromQuery({ query: `key=${data}` })
+      const results = await this.eventService.getFromQuery({ query: `key=${data["short_url"]}` });
       for (const url of results) {
         const result = await this.eventService.delete(url["id"])
-        this.logger.log(`delete:: ${result["id"]}`);
+        this.logger.log(`deleted:: ${result["id"]}`);
       }
     } catch (error) {
       this.logger.error(error);
+      await sleep(2000);
       this.logger.verbose("publishing to NATS");
-      sleep(3000);
-      this.client.send(cons.NATS_EXPIRED_URL, data).subscribe();
+      this.natsService.deleteKey(data);
     }
+  }
+
+  @MessagePattern(env.REDIS_EXPIRED_KEY)
+  expiredKeyFromRedis(@Payload() data: string, @Ctx() context: RedisContext){
+    this.logger.log(`Event: ${context.getChannel()}:: ${data}`);
+    const payload = { eventId: uuidv4(), short_url: data}
+    this.natsService.deleteKey(payload);
   }
   
 }

@@ -6,7 +6,6 @@ from src.configs import get_db_connection
 from src.models.UrlModel import Url
 from src.schemas import UrlFilter
 import logging
-from functools import lru_cache
 
 
 class UrlRepository:
@@ -22,30 +21,28 @@ class UrlRepository:
         try:
             self.db.add(data)
             self.db.commit()
-            self.db.refresh(data)
         except Exception as e:
-            logging.error(e.message)
+            logging.error(e)
             raise(e)
-
         return data
 
-    def getById(self, data: Url) -> Url:
+    def get_by_id(self, data: Url) -> Url:
         return self.db.get(Url, data.id)
     
-    def getByQuery(self, data: Url, attr: Optional[Url] = Url) -> List[Url]:
+    def get_by_query(self, data: Url, attr: Optional[Url] = Url) -> List[Url]:
         try:
             return self.db.query(attr).filter(data)
         except Exception as e:
-            return None
+            logging.error(e)
+            raise(e)
     
     async def update(self, data: Url) -> Url:
         try:
             self.db.merge(data)
             self.db.commit()
-            self.db.refresh(data)
         except Exception as e:
-            logging.error(e.message)
-            raise (e)
+            logging.error(e)
+            raise(e)
 
         return data
 
@@ -55,15 +52,12 @@ class UrlRepository:
             self.db.commit()
             self.db.flush()
         except Exception as e:
-            logging.error(e.message)
+            logging.error(e)
+            raise(e)
 
-            raise (e)
-
-    def filter(self, filter: Optional[UrlFilter]) -> List[Url]:
+    def filter(self, filter: Optional[UrlFilter], first:bool = False) -> List[Url]:
         query = self.db.query(Url)
         query = filter.filter(query)
         query = filter.sort(query)
-        try:
-            return self.db.execute(query).scalars().all()
-        except Exception as e:
-            return []
+        scalars = self.db.execute(query).scalars()
+        return scalars.first() if first else scalars.all()

@@ -5,8 +5,7 @@ from src.configs.Environment import get_environment_variables
 env = get_environment_variables()
 EVENT_URL_CREATE = "url.create"
 EVENT_URL_UPDATE = "url.update"
-EVENT_URL_METRICS = "url.metrics.visit.create"
-EVENT_METRICS_VISIT_CREATE = 'url.metrics.visit'
+EVENT_URL_METRICS = "metrics.url.visit"
 
 async def get_nats_connector():
     async def disconnected_cb():

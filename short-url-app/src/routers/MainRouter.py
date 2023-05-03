@@ -22,11 +22,10 @@ async def pong() -> str:
                 status_code=status.HTTP_302_FOUND)
 @cache
 async def get_ĺong_url(short_url: str, request: Request, background_tasks: BackgroundTasks, urlService: UrlService = Depends()):
-    url = urlService.filter(UrlFilter(key=short_url))
-    if not url:
+    result = urlService.filter(UrlFilter(key=short_url), first=True)
+    if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    url = url[0]  # first element
-    background_tasks.add_task(redis.set_key, url)
-    metrics = {"short": short_url, "original": url.original}
+    metrics = {"short": short_url, "original": result.original}
     background_tasks.add_task(nats.send_metrics, metrics, request)
-    return url.original
+    background_tasks.add_task(redis.set_key, result)
+    return result.original
