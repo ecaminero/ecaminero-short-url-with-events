@@ -15,13 +15,13 @@
 { "id": "1040e206-c04f-4283-99b2-4054fba12fd4", "expire_at": "2023-04-26",  "short": "http://localhost:8000/qzYlJh", "url": "https://articulo.mercadolibre.cl/MLC-550156003-cargador-para-macbook-60-w-providencia-nuevo-modelo-a1278-_JM#reco_item_pos=2&reco_backend=machinalis-homes&reco_backend_type=function&reco_client=home_navigation-recommendations&reco_id=f87b3357-a46f-4ccb-ba1c-bb61e89d5b9a&c_id=/home/navigation-recommendations/element&c_element_order=3&c_uid=a60c79b6-2272-4151-a432-2e5917bcbff4"}
 
 
-
+--------- usefull codes ------
 ## REDIS Commands
 docker exec -it short-url-redis-1 redis-cli
 auth meli
 
-set qzYlJh {'id': '1040e206-c04f-4283-99b2-4054fba12fd4','original': 'https://www.postman.com/downloads/','short':'http://localhost:8000/qzYlJh', 'expire_at': '2023-04-26'} ex 2
 set qzYlJh '{"id":"1040e206-c04f-4283-99b2-4054fba12fd4","original": "https://www.postman.com/downloads/","short":"http://localhost:8000/qzYlJh", "expire_at": "2023-04-26"}' ex 2
 
 
-usefull codes
+##  NATS
+nats stream report

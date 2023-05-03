@@ -11,14 +11,14 @@ def validate_url(url) -> bool:
     URL_PATTERN = "^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$"
     return bool(re.match(URL_PATTERN, url)) 
 
-def available_url(url: str, timeout:int) -> bool:
+def available_url(url: str, timeout:int=1) -> bool:
     """Validate Available URL"""
     resp = False 
     try:
         resp = requests.get(url, timeout=timeout)
         resp = resp.status_code in (status.HTTP_200_OK, status.HTTP_201_CREATED)
     except Exception as e:
-        logging.err(e)
+        logging.error(e)
         resp = False
     
     return resp 
@@ -35,3 +35,6 @@ def get_default_datetime(date: datetime) -> datetime:
 def encode_json(data: dict) -> str:
     """Encode JSON"""
     return json.dumps(data).encode("utf-8")
+
+def remove_empty_keys(data: dict):
+    return {k: v for k,v in data.items()}

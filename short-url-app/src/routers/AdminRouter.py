@@ -51,7 +51,7 @@ async def create(data: Url, background_tasks: BackgroundTasks,
 async def get(id: UUID, urlService: UrlService = Depends()) -> dict:
     result = None
     try:
-        result = urlService.getById(id)
+        result = urlService.get_by_id(id)
     except OperationalError:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -67,7 +67,7 @@ async def delete(id: UUID, background_tasks: BackgroundTasks,
                  urlService: UrlService = Depends()) -> dict:
     result = None
     try:
-        result = urlService.getById(id)
+        result = urlService.get_by_id(id)
     except OperationalError:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -80,14 +80,13 @@ async def delete(id: UUID, background_tasks: BackgroundTasks,
     return result.normalize()
 
 
-@AdminRouter.put("/{id}", status_code=status.HTTP_200_OK)
-@publish_message(EVENT_URL_UPDATE)
-async def update(id: UUID, data: Url,
+@AdminRouter.patch("/{id}", status_code=status.HTTP_200_OK)
+async def update(id: UUID, data: UpdateUrl,
                  background_tasks: BackgroundTasks,
                  urlService: UrlService = Depends()) -> dict:
     result = None
     try:
-        result = urlService.getById(id)
+        result = urlService.get_by_id(id)
     except OperationalError:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -97,7 +96,11 @@ async def update(id: UUID, data: Url,
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
     try:
-        result = await urlService.update(result, data)
+        update_data = data.dict(exclude_unset=True)
+        stored = result.normalize()
+        stored.update(update_data)
+        result = await urlService.update(stored)
+
     except OperationalError:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
