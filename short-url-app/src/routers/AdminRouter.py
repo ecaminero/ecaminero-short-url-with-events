@@ -105,6 +105,5 @@ async def update(id: UUID, data: UpdateUrl,
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="service unavailable")
-
     background_tasks.add_task(redis.set_key, result)
     return result.normalize()

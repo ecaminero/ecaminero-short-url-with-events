@@ -20,7 +20,7 @@
 docker exec -it short-url-redis-1 redis-cli
 auth meli
 
-set qzYlJh '{"id":"1040e206-c04f-4283-99b2-4054fba12fd4","original": "https://www.postman.com/downloads/","short":"http://localhost:8000/qzYlJh", "expire_at": "2023-04-26"}' ex 2
+set PtOmHK '{"id":"1040e206-c04f-4283-99b2-4054fba12fd4","original": "https://www.postman.com/downloads/","short":"http://localhost:8000/qzYlJh", "expire_at": "2023-04-26"}' ex 2
 
 
 ##  NATS

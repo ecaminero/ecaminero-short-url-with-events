@@ -1,8 +1,6 @@
 
 
-// export const NATS_SERVERS = ['nats://meli-nats:4222', 'nats://meli-nats-1:4222' ]
-export const NATS_SERVERS = ['nats://localhost:4222']
-
+export const NATS_SERVERS = process.env.NATS_SERVERS ||  'nats://localhost:4222'
 export const URL_SHORT_URL_APP = process.env.URL_SHORT_URL_APP || 'http://127.0.0.1:8000';
 
 export const APP_PORT = process.env.APP_PORT || 8080;
@@ -18,6 +16,7 @@ export const DB_PORT = 5432;
 export const DB_USERNAME = process.env.DB_USERNAME || 'meli';
 export const DB_PASSWORD = process.env.DB_PASSWORD || 'meli';
 export const DB_DATABASE = process.env.DB_DATABASE || 'meli';
+export const DB_SYNC = process.env.DB_SYNC || true;
 
 // Nats Events
 export const NATS_EVENT_URL_CREATE = 'event.url.create';

@@ -19,4 +19,4 @@ ENV APP_PORT=8000
 
 EXPOSE $APP_PORT
 # # Run the application
-ENTRYPOINT ~/.local/bin/poetry run hypercorn src.main:app --bind 0.0.0.0:8000
+ENTRYPOINT ~/.local/bin/poetry run python src/main.py

@@ -5,9 +5,10 @@ import { NatsJetStreamServer, NatsStreamConfig } from '@nestjs-plugins/nestjs-na
 import { v4 as uuidv4 } from 'uuid';
 import * as env from './constants';
 import { DiscardPolicy, RetentionPolicy, StorageType } from 'nats';
+import { randomIntFromInterval } from './utils';
 
+let random_id = (Math.random() + 1).toString(36).substring(7);
 
-let r = (Math.random() + 1).toString(36).substring(7);
 async function bootstrap() {
   const streamConfig: NatsStreamConfig = {
     name: 'events',
@@ -20,8 +21,8 @@ async function bootstrap() {
   const options: CustomStrategy = {
     strategy: new NatsJetStreamServer({
       connectionOptions: {
-        name: 'events-listener'+r,
-        servers:env.NATS_SERVERS,
+        name: 'events-listener'+random_id,
+        servers: env.NATS_SERVERS,
       },
       consumerOptions: {
         deliverTo: "listener." + uuidv4(),
@@ -44,7 +45,7 @@ async function bootstrap() {
   });
   await app.startAllMicroservices();
   const microService = app.connectMicroservice(options);
-  await app.listen(env.APP_PORT);
+  await app.listen(randomIntFromInterval(3000, 4000));
   await microService.listen();
   console.log('Runing app');
 }

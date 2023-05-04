@@ -17,7 +17,7 @@ import * as env from './constants';
       username: env.DB_USERNAME,
       password: env.DB_PASSWORD,
       database: env.DB_DATABASE,
-      synchronize: true,
+      synchronize: Boolean(env.DB_SYNC),
       autoLoadEntities: true,
     }),
     HttpModule.registerAsync({

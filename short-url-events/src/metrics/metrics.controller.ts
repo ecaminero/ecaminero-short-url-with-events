@@ -21,17 +21,15 @@ export class MetricsController {
 
   @EventPattern(env.NATS_METRICS_VISIT_CREATE)
   async createMetrics(@Payload() data: any, @Ctx() context: NatsJetStreamContext) {
-    context.message.ack();
     this.logger.log(`Subject:: ${context.message.subject} ::received`);
     this.logger.verbose(`Data:: ${JSON.stringify(data)}`);
 
     try {
       const result = await this.metricsService.save(data);
+      context.message.ack();
     } catch (error) {
       this.logger.error(error);
-      await sleep(3000);
       this.logger.verbose("publishing to NATS");
-      this.natsService.createMetrics(data);
     }
   }
 

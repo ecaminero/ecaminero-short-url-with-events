@@ -1,1 +1,3 @@
-for ((i=1;i<=1;i++)); do   curl "localhost:8000/baW96F"; done
+for ((i=1;i<=50;i++)); do  
+curl -w "@curl-format.txt" -o /dev/null -s "localhost:8000/qu4Kue"; 
+done

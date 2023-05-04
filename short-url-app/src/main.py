@@ -6,7 +6,7 @@ from src.routers.AdminRouter import AdminRouter
 from src.routers.MainRouter import MainRouter
 from src.models.BaseModel import init
 from src.configs.Environment import get_environment_variables
-
+import uvicorn
 # Application Environment Configuration
 env = get_environment_variables()
 
@@ -23,3 +23,6 @@ app.include_router(MainRouter)
 
 
 init()
+
+if __name__ == "__main__":
+   uvicorn.run("main:app", host="0.0.0.0", port=env.APP_PORT, reload=True)

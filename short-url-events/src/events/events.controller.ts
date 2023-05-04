@@ -20,6 +20,7 @@ export class EventsController {
   async getNotifications(@Payload() data: object, @Ctx() context: NatsJetStreamContext){
     this.logger.log(`Subject:: ${context.message.subject} ::received`);
     this.logger.verbose(JSON.stringify(data));
+    context.message.ack();
   }
 
   @MessagePattern(env.NATS_EVENT_URL_DELETE)
@@ -32,6 +33,7 @@ export class EventsController {
         const result = await this.eventService.delete(url["id"])
         this.logger.log(`deleted:: ${result["id"]}`);
       }
+      context.message.ack;
     } catch (error) {
       this.logger.error(error);
       await sleep(2000);
